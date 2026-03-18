@@ -1,13 +1,215 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toetje bij Opa Gerard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --brand-olive: #5A5A40;
+            --brand-cream: #f5f5f0;
+            --brand-ink: #1a1a1a;
+        }
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background-color: var(--brand-cream);
+            color: var(--brand-ink);
+        }
+        .font-sans { font-family: 'Inter', sans-serif; }
+        .pill-image {
+            border-radius: 9999px;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 32px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        .olive-button {
+            background-color: var(--brand-olive);
+            color: white;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+        }
+        .olive-button:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .olive-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .selected-ring {
+            box-shadow: 0 0 0 4px var(--brand-olive), 0 0 0 8px white;
+        }
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        #success-toast {
+            transition: all 0.5s ease;
+            transform: translate(-50%, 100px);
+            opacity: 0;
+        }
+        #success-toast.show {
+            transform: translate(-50%, 0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen px-6 py-12">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-16 fade-in">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-[#5A5A40] text-white rounded-full mb-6">
+                <i data-lucide="utensils" size="32"></i>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-light mb-4 tracking-tight">
+                Toetje bij Opa Gerard
+            </h1>
+            <div class="flex items-center justify-center gap-2 text-[#5A5A40]/70 font-sans text-sm uppercase tracking-widest font-medium">
+                <i data-lucide="calendar" size="14"></i>
+                <span>Elke Dinsdagavond</span>
+            </div>
+        </header>
 
+        <!-- Main Content -->
+        <main class="space-y-16">
+            <!-- Selection Grid -->
+            <section class="fade-in" style="animation-delay: 0.2s">
+                <h2 class="text-2xl italic mb-8 text-center opacity-80">
+                    Waar heb je deze week zin in?
+                </h2>
+                <div id="dessert-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Desserts will be injected here -->
+                </div>
+            </section>
+
+            <!-- Custom Suggestion -->
+            <section class="card p-8 md:p-12 max-w-2xl mx-auto fade-in" style="animation-delay: 0.4s">
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="message-square" class="text-[#5A5A40]" size="24"></i>
+                    <h3 class="text-2xl">Iets anders in gedachten?</h3>
+                </div>
+                <form id="preference-form" class="space-y-6">
+                    <div class="relative">
+                        <textarea
+                            id="custom-suggestion"
+                            placeholder="Laat opa weten wat je lekker vindt..."
+                            class="w-full bg-[#f5f5f0]/50 border-none rounded-2xl p-4 font-sans focus:ring-2 focus:ring-[#5A5A40]/20 min-h-[100px] resize-none outline-none"
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-center">
+                        <button
+                            type="submit"
+                            id="submit-btn"
+                            disabled
+                            class="olive-button px-10 py-4 font-sans font-medium tracking-wide flex items-center gap-2"
+                        >
+                            <i data-lucide="heart" size="18"></i>
+                            <span>Voorkeur Doorgeven</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-24 pt-12 border-t border-[#5A5A40]/10 text-center fade-in" style="animation-delay: 0.6s">
+            <p class="italic opacity-40 text-sm">
+                "Eten bij opa is altijd een feestje."
+            </p>
+        </footer>
+
+        <!-- Success Notification -->
+        <div id="success-toast" class="fixed bottom-8 left-1/2 bg-[#1a1a1a] text-white px-6 py-3 rounded-full shadow-2xl font-sans text-sm z-50">
+            Bedankt! Opa Gerard heeft je voorkeur ontvangen.
+        </div>
+    </div>
+
+    <script>
+        const DESSERTS = [
+            { id: 'vla', name: 'Vla met Slagroom', image: 'https://picsum.photos/seed/custard/400/600', description: 'De klassieke Nederlandse vla.' },
+            { id: 'ijs', name: 'Ijs met Vruchtjes', image: 'https://picsum.photos/seed/sorbet/400/600', description: 'Heerlijk verfrissend ijs.' },
+            { id: 'fruit', name: 'Vers Fruit', image: 'https://picsum.photos/seed/berries/400/600', description: 'Gezond en lekker van het seizoen.' },
+            { id: 'pudding', name: "Opa's zelfgemaakt toetje", image: 'https://picsum.photos/seed/homemade/400/600', description: "Opa's specialiteit." },
+        ];
+
+        let selectedId = localStorage.getItem('dessertPreference') || null;
+        const grid = document.getElementById('dessert-grid');
+        const form = document.getElementById('preference-form');
+        const textarea = document.getElementById('custom-suggestion');
+        const submitBtn = document.getElementById('submit-btn');
+        const toast = document.getElementById('success-toast');
+
+        function renderGrid() {
+            grid.innerHTML = DESSERTS.map((dessert, index) => `
+                <button
+                    onclick="selectDessert('${dessert.id}')"
+                    class="group relative flex flex-col items-center text-center focus:outline-none"
+                >
+                    <div class="relative mb-4 transition-transform duration-500 group-hover:scale-105 ${selectedId === dessert.id ? 'selected-ring rounded-full' : ''}">
+                        <img 
+                            src="${dessert.image}" 
+                            alt="${dessert.name}"
+                            class="pill-image w-full max-w-[150px]"
+                        />
+                        ${selectedId === dessert.id ? `
+                            <div class="absolute inset-0 bg-[#5A5A40]/20 rounded-full flex items-center justify-center">
+                                <div class="bg-[#5A5A40] text-white p-2 rounded-full shadow-lg">
+                                    <i data-lucide="check" size="20"></i>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <span class="text-lg font-medium">${dessert.name}</span>
+                    <span class="font-sans text-xs opacity-50 mt-1">${dessert.description}</span>
+                </button>
+            `).join('');
+            lucide.createIcons();
+            updateSubmitButton();
+        }
+
+        window.selectDessert = function(id) {
+            selectedId = id;
+            localStorage.setItem('dessertPreference', id);
+            renderGrid();
+        };
+
+        function updateSubmitButton() {
+            submitBtn.disabled = !selectedId && !textarea.value.trim();
+        }
+
+        textarea.addEventListener('input', updateSubmitButton);
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show success state
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i data-lucide="check" size="18"></i><span>Verzonden!</span>';
+            lucide.createIcons();
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                submitBtn.innerHTML = originalContent;
+                lucide.createIcons();
+            }, 3000);
+        });
+
+        // Initial render
+        renderGrid();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
