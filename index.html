@@ -231,6 +231,64 @@
             border: 1px solid var(--tech-accent);
         }
 
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            html, body {
+                overflow-x: hidden;
+            }
+            h1 {
+                font-size: 2.2rem !important;
+            }
+            .calendar-day {
+                min-height: 60px;
+                padding: 4px;
+                font-size: 11px;
+            }
+            .month-header {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            .calendar-grid-header div {
+                font-size: 9px;
+                padding: 2px;
+            }
+            .event-text {
+                font-size: 7px;
+                padding: 1px 2px;
+                margin-top: 1px;
+            }
+            .calendar-day.today::after {
+                font-size: 6px;
+                top: 1px;
+                right: 1px;
+                padding: 1px 2px;
+            }
+            .section-title {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            .card {
+                padding: 12px !important;
+            }
+            .input-field {
+                font-size: 16px;
+                padding: 8px 12px;
+            }
+            .name-btn {
+                font-size: 14px;
+                padding: 8px;
+            }
+            .calendar-scroll-area {
+                max-height: 350px;
+            }
+            .login-card {
+                padding: 24px !important;
+            }
+            .login-card h2 {
+                font-size: 1.5rem !important;
+            }
+        }
+
         .event-text {
             font-family: 'JetBrains Mono', monospace;
             font-size: 9px;
@@ -364,7 +422,7 @@
     <div class="max-w-6xl mx-auto">
         <!-- Login Overlay -->
         <div id="login-overlay" class="fixed inset-0 bg-slate-100 z-50 flex items-center justify-center px-6">
-            <div class="card p-8 w-full max-w-md text-center space-y-6 fade-in">
+            <div class="card p-8 w-full max-w-md text-center space-y-6 fade-in login-card">
                 <div class="inline-flex items-center justify-center w-12 h-12 bg-slate-800 text-white">
                     <i data-lucide="lock" size="24"></i>
                 </div>
