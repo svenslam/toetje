@@ -565,7 +565,6 @@
                         <span>Marktinformatie</span>
                         <div class="ml-auto flex gap-2">
                             <button id="clear-offers-btn" class="font-mono text-xs text-red-600 uppercase font-bold border border-red-200 px-3 py-1 hover:bg-red-50 admin-only hidden">Wissen</button>
-                            <button id="fetch-offers-btn" class="font-mono text-xs text-blue-600 uppercase font-bold border border-blue-200 px-3 py-1 hover:bg-blue-50 admin-only hidden">Scannen</button>
                         </div>
                     </div>
                     
@@ -574,7 +573,6 @@
                         <a href="https://www.aldi.nl/producten/zuivel-eieren-boter/toetjes-desserts.html" target="_blank" class="font-mono text-xs uppercase font-bold border border-blue-200 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100">Aldi</a>
                     </div>
 
-                    <div id="fetch-status" class="text-center font-mono text-base opacity-60 hidden mb-4">Scannen...</div>
                     <div id="offers-list" class="space-y-3">
                         <div class="text-center py-4 opacity-40 font-mono text-base italic">Geen Gegevens Gevonden...</div>
                     </div>
@@ -599,7 +597,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot, query, orderBy, serverTimestamp, addDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-        import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
 
         // Firebase Config
         const firebaseConfig = {
@@ -715,8 +712,6 @@
 
         const preferenceDateInput = document.getElementById('preference-date');
         const adminResults = document.getElementById('admin-results');
-        const fetchOffersBtn = document.getElementById('fetch-offers-btn');
-        const fetchStatus = document.getElementById('fetch-status');
         const clearPreferencesBtn = document.getElementById('clear-preferences-btn');
         const clearOffersBtn = document.getElementById('clear-offers-btn');
 
@@ -1295,65 +1290,6 @@
                     console.error("Error clearing offers:", error);
                 }
             });
-        });
-
-        fetchOffersBtn.addEventListener('click', async () => {
-            fetchStatus.classList.remove('hidden');
-            fetchStatus.textContent = "RETAIL_DATABASES_SCANNEN_OP_TOETJES...";
-            fetchOffersBtn.disabled = true;
-            try {
-                const ai = new GoogleGenAI({ apiKey: firebaseConfig.apiKey });
-                const response = await ai.models.generateContent({
-                    model: "gemini-3-flash-preview",
-                    contents: "Zoek actuele toetjes aanbiedingen (vla, pudding, ijs, yoghurt) bij DekaMarkt (https://www.dekamarkt.nl/producten/zuivel-kaas/toetjes) en Aldi (https://www.aldi.nl/producten/zuivel-eieren-boter/toetjes-desserts.html) voor deze week. Geef een lijst van maximaal 8 aanbiedingen.",
-                    config: {
-                        tools: [
-                            { googleSearch: {} },
-                            { urlContext: {} }
-                        ],
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: Type.ARRAY,
-                            items: {
-                                type: Type.OBJECT,
-                                properties: {
-                                    title: { type: Type.STRING },
-                                    supermarket: { type: Type.STRING },
-                                    price: { type: Type.STRING },
-                                    validUntil: { type: Type.STRING },
-                                    link: { type: Type.STRING }
-                                },
-                                required: ["title", "supermarket"]
-                            }
-                        }
-                    }
-                });
-
-                let jsonText = response.text.trim();
-                if (jsonText.startsWith('```json')) {
-                    jsonText = jsonText.replace(/^```json\n/, '').replace(/\n```$/, '');
-                } else if (jsonText.startsWith('```')) {
-                    jsonText = jsonText.replace(/^```\n/, '').replace(/\n```$/, '');
-                }
-
-                const offers = JSON.parse(jsonText);
-                const batch = writeBatch(db);
-                
-                for (const offer of offers) {
-                    const offerId = offer.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-                    batch.set(doc(db, "offers", offerId), offer);
-                }
-                await batch.commit();
-                fetchStatus.textContent = "DATABASE_SYNC_VOLTOOID";
-            } catch (error) {
-                console.error(error);
-                fetchStatus.textContent = "SCAN_MISLUKT: " + (error.message || "ONBEKENDE_FOUT");
-            } finally {
-                setTimeout(() => {
-                    fetchStatus.classList.add('hidden');
-                    fetchOffersBtn.disabled = false;
-                }, 5000);
-            }
         });
 
         function updateSubmitButton() {
