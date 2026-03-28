@@ -239,29 +239,55 @@
             h1 {
                 font-size: 2.2rem !important;
             }
+            .calendar-grid-header {
+                display: none;
+            }
+            .calendar-days-grid {
+                grid-template-columns: 1fr;
+            }
+            .calendar-day.other-month {
+                display: none;
+            }
             .calendar-day {
-                min-height: 60px;
-                padding: 4px;
-                font-size: 11px;
+                min-height: auto;
+                padding: 12px 16px;
+                font-size: 16px;
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+            }
+            .calendar-day span.z-10 {
+                min-width: 60px;
+                flex-shrink: 0;
+                display: flex;
+                align-items: baseline;
+                gap: 4px;
+            }
+            .calendar-day .flex-col {
+                margin-top: 0 !important;
+            }
+            .day-name {
+                display: inline !important;
+                font-size: 12px;
+                opacity: 0.5;
+                font-weight: 400;
             }
             .month-header {
-                font-size: 13px;
-                padding: 6px 10px;
-            }
-            .calendar-grid-header div {
-                font-size: 9px;
-                padding: 2px;
+                font-size: 14px;
+                padding: 10px 16px;
+                grid-column: span 1;
             }
             .event-text {
-                font-size: 7px;
-                padding: 1px 2px;
+                font-size: 9px;
+                padding: 2px 4px;
                 margin-top: 1px;
             }
             .calendar-day.today::after {
-                font-size: 6px;
-                top: 1px;
-                right: 1px;
-                padding: 1px 2px;
+                font-size: 8px;
+                top: 50%;
+                right: 16px;
+                transform: translateY(-50%);
+                padding: 2px 4px;
             }
             .section-title {
                 font-size: 13px;
@@ -279,7 +305,7 @@
                 padding: 8px;
             }
             .calendar-scroll-area {
-                max-height: 350px;
+                max-height: 400px;
             }
             .login-card {
                 padding: 24px !important;
@@ -288,6 +314,8 @@
                 font-size: 1.5rem !important;
             }
         }
+
+        .day-name { display: none; }
 
         .event-text {
             font-family: 'JetBrains Mono', monospace;
@@ -936,6 +964,7 @@
 
         function renderCalendar() {
             const monthNames = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
+            const dayNamesShort = ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"];
             
             // We'll render from the current month to 12 months in the future
             const today = new Date();
@@ -1006,7 +1035,7 @@
                     html += `
                         <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" 
                              onclick="window.selectCalendarDate('${dateStr}')">
-                            <span class="z-10">${i}</span>
+                            <span class="z-10">${i}<span class="day-name">${dayNamesShort[dayOfWeek]}</span></span>
                             <div class="flex flex-col gap-0.5 mt-1 w-full overflow-hidden">
                                 ${dayEvents.map(e => `
                                     <div class="event-text event-text-${e.type}" title="${e.title}">
