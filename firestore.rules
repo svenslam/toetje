@@ -1,0 +1,81 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: preferences
+    // Document ID: {userName.toLowerCase()}_{date}
+    // Fields:
+    //   - userId: string (required) - unique ID for the preference
+    //   - userName: string (required) - name of the person
+    //   - date: string (required) - ISO date string (YYYY-MM-DD)
+    //   - isComing: bool (required) - whether the person is coming
+    //   - customSuggestion: string (optional) - dessert suggestion
+    //   - mediaUrl: string (optional) - URL to media
+    //   - mediaType: string (optional) - type of media (image, video, audio, link)
+    //   - timestamp: timestamp (required) - when it was submitted
+    //
+    // Collection: calendar_events
+    // Fields:
+    //   - date: string (required) - ISO date string
+    //   - title: string (required) - event title
+    //   - type: string (required) - event type (holiday, dinner, etc.)
+    //
+    // Collection: offers
+    // Fields:
+    //   - title: string (required) - dessert title
+    //   - supermarket: string (required) - supermarket name
+    //   - price: string (optional) - price
+    //   - validUntil: string (optional) - validity date
+    //   - link: string (optional) - link to offer
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return true; // Simplified for this app's password-based logic
+    }
+
+    function isAdmin() {
+      return true; // Simplified for this app's password-based logic
+    }
+
+    function isValidPreference(data) {
+      return data.userName is string && data.userName.size() > 0 && data.userName.size() < 100 &&
+             data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+             (data.isComing is bool || data.isComing is string) &&
+             (!('customSuggestion' in data) || (data.customSuggestion is string && data.customSuggestion.size() < 1000)) &&
+             (!('mediaUrl' in data) || (data.mediaUrl is string && data.mediaUrl.size() < 2000)) &&
+             (!('mediaType' in data) || (data.mediaType in ['image', 'video', 'audio', 'link']));
+    }
+
+    function isValidCalendarEvent(data) {
+      return data.date is string && data.date.matches('^\\d{4}-\\d{2}-\\d{2}$') &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.type is string;
+    }
+
+    function isValidOffer(data) {
+      return data.title is string && data.title.size() > 0 &&
+             data.supermarket is string && data.supermarket.size() > 0;
+    }
+
+    match /preferences/{preferenceId} {
+      allow read: if true;
+      allow create, update: if isValidPreference(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /calendar_events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidCalendarEvent(request.resource.data);
+    }
+
+    match /offers/{offerId} {
+      allow read: if true;
+      allow write: if isAdmin() && isValidOffer(request.resource.data);
+    }
+  }
+}

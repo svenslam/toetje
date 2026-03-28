@@ -5,210 +5,1410 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toetje bij Opa Gerard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --brand-olive: #5A5A40;
-            --brand-cream: #f5f5f0;
-            --brand-ink: #1a1a1a;
+            --tech-blue: #0047AB;
+            --tech-steel: #333333;
+            --tech-paper: #f0f2f5;
+            --tech-grid: rgba(0, 71, 171, 0.05);
+            --tech-accent: #f59e0b; /* Caution Orange */
         }
         body {
-            font-family: 'Cormorant Garamond', serif;
-            background-color: var(--brand-cream);
-            color: var(--brand-ink);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--tech-paper);
+            background-image: 
+                linear-gradient(var(--tech-grid) 1px, transparent 1px),
+                linear-gradient(90deg, var(--tech-grid) 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--tech-steel);
+            font-size: 18px; /* Increased base font */
+            line-height: 1.5;
         }
-        .font-sans { font-family: 'Inter', sans-serif; }
-        .pill-image {
-            border-radius: 9999px;
-            aspect-ratio: 3/4;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
         .card {
             background-color: #FFFFFF;
-            border-radius: 32px;
-            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--tech-steel);
+            border-radius: 0;
+            box-shadow: 2px 2px 0px var(--tech-steel); /* Smaller shadow */
+            position: relative;
+            overflow: hidden;
         }
+        .card.caution::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px;
+            background: repeating-linear-gradient(45deg, var(--tech-accent), var(--tech-accent) 10px, #000 10px, #000 20px);
+            z-index: 10;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--tech-steel);
+            margin-bottom: 12px;
+        }
+
+        .dim-line {
+            position: relative;
+            border-top: 1px solid #cbd5e1;
+            margin: 12px 0;
+        }
+        .dim-line::before, .dim-line::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            width: 1px;
+            height: 9px;
+            background: #cbd5e1;
+        }
+        .dim-line::before { left: 0; }
+        .dim-line::after { right: 0; }
+        .dim-label {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 0 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
         .olive-button {
-            background-color: var(--brand-olive);
+            background-color: var(--tech-blue);
             color: white;
-            border-radius: 9999px;
-            transition: all 0.3s ease;
+            border: 1px solid var(--tech-steel);
+            border-radius: 0;
+            transition: all 0.1s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            padding: 12px 24px;
+            font-weight: 700;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px var(--tech-steel);
         }
         .olive-button:hover:not(:disabled) {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            background-color: #003380;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--tech-steel);
+        }
+        .olive-button:active:not(:disabled) {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 0px 0px var(--tech-steel);
         }
         .olive-button:disabled {
-            opacity: 0.3;
+            opacity: 0.5;
+            filter: grayscale(1);
             cursor: not-allowed;
         }
-        .selected-ring {
-            box-shadow: 0 0 0 4px var(--brand-olive), 0 0 0 8px white;
+
+        .name-btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            background: white;
+            transition: all 0.1s ease;
         }
-        .fade-in {
-            animation: fadeIn 0.8s ease-out forwards;
+        .name-btn.active {
+            background: var(--tech-blue);
+            color: white;
+            border-color: var(--tech-steel);
+            box-shadow: 2px 2px 0px var(--tech-steel);
         }
+
+        .input-field {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 0;
+            padding: 10px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+        .input-field:focus {
+            border-color: var(--tech-blue);
+            background-color: #f8fafc;
+        }
+
+        .calendar-grid-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: #f8fafc;
+            border: 1px solid var(--tech-steel);
+            border-bottom: none;
+        }
+        .calendar-scroll-area {
+            max-height: 450px;
+            overflow-y: auto;
+            border: 1px solid var(--tech-steel);
+            background-color: #e2e8f0;
+        }
+        .calendar-days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+        .month-header {
+            grid-column: span 7;
+            background-color: #f8fafc;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--tech-steel);
+            border-top: 1px solid var(--tech-steel);
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            color: var(--tech-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .month-header::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--tech-accent);
+        }
+        .calendar-day {
+            background-color: white;
+            min-height: 120px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .calendar-day:hover:not(.other-month) {
+            background-color: #f1f5f9;
+            z-index: 10;
+            box-shadow: inset 0 0 0 1px var(--tech-blue);
+        }
+        .calendar-day.selected {
+            background-color: #eff6ff;
+            box-shadow: inset 0 0 0 2px var(--tech-blue);
+            z-index: 5;
+        }
+        .calendar-day.other-month { opacity: 0.2; cursor: default; }
+        .calendar-day.today { 
+            background-color: #fffbeb; 
+            box-shadow: inset 0 0 0 2px var(--tech-accent);
+        }
+        .calendar-day.today::after {
+            content: 'VANDAAG';
+            position: absolute;
+            top: 4px; right: 4px;
+            font-size: 10px;
+            color: var(--tech-accent);
+            font-weight: 900;
+            background: white;
+            padding: 2px 4px;
+            border: 1px solid var(--tech-accent);
+        }
+
+        .event-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1.1;
+            text-transform: uppercase;
+            margin-top: 2px;
+            padding: 2px 4px;
+            border-radius: 0;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        .event-text-holiday { background-color: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .event-text-dinner { background-color: #dcfce7; color: #166534; border-color: #86efac; }
+        .event-text-attendance { background-color: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .event-text-vacation { background-color: #fef9c3; color: #854d0e; border-color: #fde047; }
+
+        .event-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 0;
+            margin-top: 4px;
+        }
+        .event-dinner { background-color: var(--tech-blue); }
+        .event-attendance { background-color: #059669; }
+        .event-holiday { background-color: #dc2626; }
+        .event-vacation { background-color: #2563eb; }
+
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 0; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .media-preview {
+            max-width: 100%;
+            border: 1px solid var(--tech-steel);
+            margin-top: 8px;
+        }
+        
+        /* Technical Drawing Accents */
+        .dim-line {
+            position: relative;
+            border-top: 1px solid var(--tech-steel);
+            margin: 20px 0;
+        }
+        .dim-line::before, .dim-line::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            width: 1px;
+            height: 11px;
+            background: var(--tech-steel);
+        }
+        .dim-line::before { left: 0; }
+        .dim-line::after { right: 0; }
+        .dim-label {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--tech-paper);
+            padding: 0 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .name-btn {
+            border: 1px solid var(--tech-steel);
+            border-radius: 0;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            transition: all 0.2s ease;
+            background: white;
+            text-transform: uppercase;
+        }
+        .name-btn:hover {
+            background: #f1f5f9;
+        }
+        .name-btn.active {
+            background: var(--tech-steel);
+            color: white;
+        }
+
         #success-toast {
-            transition: all 0.5s ease;
-            transform: translate(-50%, 100px);
+            transform: translateX(-50%);
             opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            bottom: 20px;
+            border-radius: 0;
+            border: 2px solid var(--tech-steel);
         }
         #success-toast.show {
-            transform: translate(-50%, 0);
             opacity: 1;
+            bottom: 32px;
+        }
+
+        .admin-only {
+            border-left: 4px solid var(--tech-accent);
+        }
+
+        /* Compact Layout Tweaks */
+        .section-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--tech-steel);
+            padding-bottom: 4px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
-<body class="min-h-screen px-6 py-12">
-    <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-16 fade-in">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-[#5A5A40] text-white rounded-full mb-6">
-                <i data-lucide="utensils" size="32"></i>
+<body class="min-h-screen px-4 py-8 md:px-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Login Overlay -->
+        <div id="login-overlay" class="fixed inset-0 bg-slate-100 z-50 flex items-center justify-center px-6">
+            <div class="card p-8 w-full max-w-md text-center space-y-6 fade-in">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-slate-800 text-white">
+                    <i data-lucide="lock" size="24"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-mono font-bold uppercase tracking-tighter">Systeem Toegang</h2>
+                    <p class="font-mono text-base opacity-60">Voer Familie Autorisatiecode in</p>
+                </div>
+                <div class="space-y-4">
+                    <input type="password" id="family-password" placeholder="CODE" class="input-field text-center text-xl">
+                    <button id="enter-btn" class="olive-button w-full text-lg">Initialiseren</button>
+                </div>
+                <p id="login-error" class="text-red-600 text-sm font-mono hidden uppercase font-bold">Fout: Ongeautoriseerde Toegang</p>
             </div>
-            <h1 class="text-5xl md:text-6xl font-light mb-4 tracking-tight">
-                Toetje bij Opa Gerard
-            </h1>
-            <div class="flex items-center justify-center gap-2 text-[#5A5A40]/70 font-sans text-sm uppercase tracking-widest font-medium">
-                <i data-lucide="calendar" size="14"></i>
-                <span>Elke Dinsdagavond</span>
+        </div>
+
+        <!-- Custom Confirmation Modal -->
+        <div id="confirm-modal" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center px-6 hidden">
+            <div class="card p-6 w-full max-w-sm text-center space-y-4">
+                <div class="inline-flex items-center justify-center w-10 h-10 bg-red-100 text-red-600">
+                    <i data-lucide="alert-triangle" size="20"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-mono font-bold uppercase" id="confirm-title">Bevestig Actie</h3>
+                    <p class="font-mono text-sm opacity-60 mt-1" id="confirm-message">Deze bewerking kan niet ongedaan worden gemaakt.</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="confirm-cancel" class="flex-1 px-4 py-3 border border-slate-300 font-mono text-xs font-bold uppercase hover:bg-slate-50 transition-colors">Afbreken</button>
+                    <button id="confirm-ok" class="flex-1 px-4 py-3 bg-red-600 text-white font-mono text-xs font-bold uppercase hover:bg-red-700 transition-colors">Uitvoeren</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header class="mb-8 fade-in flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-10 h-10 bg-slate-800 text-white flex items-center justify-center">
+                        <i data-lucide="utensils" size="20"></i>
+                    </div>
+                    <span class="font-mono text-sm uppercase tracking-[0.2em] font-bold opacity-40">Project: Toetjes Dashboard</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-mono font-black uppercase tracking-tighter leading-none">
+                    Opa Gerard <span class="text-blue-700">v3.1</span>
+                </h1>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-right hidden md:block">
+                    <div class="font-mono text-xs uppercase font-bold opacity-40">Frequentie</div>
+                    <div class="font-mono text-base font-bold">ELKE WOENSDAG</div>
+                </div>
+                <button id="logout-btn" class="font-mono text-xs uppercase font-bold border border-slate-300 px-4 py-2 hover:bg-slate-200 transition-colors flex items-center gap-2">
+                    <i data-lucide="log-out" size="14"></i>
+                    <span>Afsluiten</span>
+                </button>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="space-y-16">
-            <!-- Selection Grid -->
-            <section class="fade-in" style="animation-delay: 0.2s">
-                <h2 class="text-2xl italic mb-8 text-center opacity-80">
-                    Waar heb je deze week zin in?
-                </h2>
-                <div id="dessert-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <!-- Desserts will be injected here -->
-                </div>
-            </section>
+        <!-- Main Content Grid -->
+        <main id="main-content" class="grid grid-cols-1 lg:grid-cols-12 gap-6 opacity-0 pointer-events-none transition-opacity duration-500">
+            
+            <!-- Left Column: Calendar & Overview -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- Calendar Section -->
+                <section class="card p-4 fade-in">
+                    <div class="section-title">
+                        <i data-lucide="calendar" size="18"></i>
+                        <span>Schema_Overzicht</span>
+                    </div>
+                    
+                    <div class="flex items-center justify-between mb-4 font-mono">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-bold uppercase text-slate-800">Kalender_Overzicht</span>
+                        </div>
+                        <div class="text-xs font-bold opacity-40 uppercase">12 Maanden_Vooruit</div>
+                    </div>
 
-            <!-- Custom Suggestion -->
-            <section class="card p-8 md:p-12 max-w-2xl mx-auto fade-in" style="animation-delay: 0.4s">
-                <div class="flex items-center gap-3 mb-6">
-                    <i data-lucide="message-square" class="text-[#5A5A40]" size="24"></i>
-                    <h3 class="text-2xl">Iets anders in gedachten?</h3>
-                </div>
-                <form id="preference-form" class="space-y-6">
-                    <div class="relative">
-                        <textarea
-                            id="custom-suggestion"
-                            placeholder="Laat opa weten wat je lekker vindt..."
-                            class="w-full bg-[#f5f5f0]/50 border-none rounded-2xl p-4 font-sans focus:ring-2 focus:ring-[#5A5A40]/20 min-h-[100px] resize-none outline-none"
-                        ></textarea>
+                    <div class="mb-4">
+                        <div class="calendar-grid-header">
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Ma</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Di</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Wo</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Do</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Vr</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Za</div>
+                            <div class="p-2 text-center font-mono text-sm font-bold uppercase opacity-60">Zo</div>
+                        </div>
+                        <div class="calendar-scroll-area">
+                            <div id="calendar-days" class="calendar-days-grid"></div>
+                        </div>
                     </div>
-                    <div class="flex justify-center">
-                        <button
-                            type="submit"
-                            id="submit-btn"
-                            disabled
-                            class="olive-button px-10 py-4 font-sans font-medium tracking-wide flex items-center gap-2"
-                        >
-                            <i data-lucide="heart" size="18"></i>
-                            <span>Voorkeur Doorgeven</span>
+
+                    <div class="flex flex-wrap gap-4 font-mono text-[12px] font-bold uppercase opacity-60 justify-center border-t border-slate-100 pt-3">
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 event-dinner"></div> Diner</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 event-attendance"></div> Aanwezigheid</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 event-holiday"></div> Vakantie</div>
+                        <div class="flex items-center gap-1.5"><div class="w-3 h-3 event-vacation"></div> Verlof</div>
+                    </div>
+                </section>
+
+                <!-- Preferences Overview -->
+                <section id="attendance-log-section" class="card p-4 fade-in">
+                    <div class="section-title">
+                        <i data-lucide="users" size="18"></i>
+                        <span>Aanwezigheidslogboek</span>
+                        <button id="clear-preferences-btn" class="ml-auto font-mono text-xs text-red-600 uppercase font-bold border border-red-200 px-3 py-1 hover:bg-red-50 admin-only hidden">Alles_Wissen</button>
+                    </div>
+                    <div id="admin-results" class="space-y-4">
+                        <div class="text-center py-6 opacity-40 font-mono text-base italic">Wachten op Gegevens...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Form & Offers -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Input Form -->
+                <section class="card p-4 fade-in caution">
+                    <div class="section-title">
+                        <i data-lucide="edit-3" size="18"></i>
+                        <span>Gegevens_Invoer</span>
+                    </div>
+                    
+                    <form id="preference-form" class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="font-mono text-xs uppercase font-bold opacity-60">Doeldatum</label>
+                            <input type="date" id="preference-date" class="input-field text-lg">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="font-mono text-xs uppercase font-bold opacity-60">Gebruiker_ID</label>
+                            <div id="name-selector" class="grid grid-cols-3 gap-2">
+                                <button type="button" class="name-btn" data-name="Sven">Sven</button>
+                                <button type="button" class="name-btn" data-name="Sylvia">Sylvia</button>
+                                <button type="button" class="name-btn" data-name="Jet">Jet</button>
+                                <button type="button" class="name-btn" data-name="Tom">Tom</button>
+                                <button type="button" class="name-btn" data-name="Jil">Jil</button>
+                                <button type="button" class="name-btn" data-name="OPA">OPA</button>
+                            </div>
+                            <input type="hidden" id="user-name">
+                        </div>
+
+                        <div class="space-y-2 pt-2 border-t border-slate-100">
+                            <label class="font-mono text-xs uppercase font-bold opacity-60">Status_Rapport</label>
+                            <div id="attendance-toggle" class="grid grid-cols-3 gap-2">
+                                <button type="button" id="coming-yes" class="px-2 py-3 border border-green-600 text-green-600 font-mono text-xs font-bold uppercase hover:bg-green-50 transition-colors">Bevestigen</button>
+                                <button type="button" id="coming-no" class="px-2 py-3 border border-red-600 text-red-600 font-mono text-xs font-bold uppercase hover:bg-red-50 transition-colors">Afwijzen</button>
+                                <button type="button" id="coming-maybe" class="px-2 py-3 border border-orange-500 text-orange-500 font-mono text-xs font-bold uppercase hover:bg-orange-50 transition-colors">Misschien</button>
+                                <input type="hidden" id="is-coming" value="true">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="font-mono text-xs uppercase font-bold opacity-60">Specificaties / Notities</label>
+                            <textarea id="custom-suggestion" class="input-field min-h-[100px] resize-none text-base" placeholder="Voer toetje of voorkeur in..."></textarea>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="font-mono text-xs uppercase font-bold opacity-60">Referentie_Link (Optioneel)</label>
+                            <div class="flex gap-2">
+                                <input type="url" id="media-url" placeholder="https://..." class="input-field flex-1 text-base">
+                                <select id="media-type" class="input-field w-32 text-xs">
+                                    <option value="link">URL</option>
+                                    <option value="image">IMG</option>
+                                    <option value="video">VID</option>
+                                    <option value="audio">AUD</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submit-btn" disabled class="olive-button w-full flex justify-center items-center gap-3 py-4">
+                            <i data-lucide="send" size="18"></i>
+                            <span class="text-lg">Gegevens_Verzenden</span>
                         </button>
+                    </form>
+                </section>
+
+                <!-- Admin Controls -->
+                <section class="card p-4 fade-in admin-only hidden">
+                    <div class="section-title">
+                        <i data-lucide="settings" size="18"></i>
+                        <span>Systeem_Overschrijven</span>
                     </div>
-                </form>
-            </section>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <input type="date" id="event-date" class="input-field text-base">
+                        <select id="event-type" class="input-field text-sm">
+                            <option value="dinner">Diner</option>
+                            <option value="holiday">Vakantie</option>
+                            <option value="vacation">Verlof</option>
+                        </select>
+                    </div>
+                    <input type="text" id="event-title" placeholder="Gebeurtenis_Label" class="input-field mb-2 text-base">
+                    <button id="add-event-btn" class="olive-button w-full py-3 text-sm">Gebeurtenis_Toevoegen</button>
+                </section>
+
+                <!-- Offers Section -->
+                <section id="offers-section" class="card p-4 fade-in">
+                    <div class="section-title">
+                        <i data-lucide="shopping-cart" size="18"></i>
+                        <span>Marktinformatie</span>
+                        <div class="ml-auto flex gap-2">
+                            <button id="clear-offers-btn" class="font-mono text-xs text-red-600 uppercase font-bold border border-red-200 px-3 py-1 hover:bg-red-50 admin-only hidden">Wissen</button>
+                            <button id="fetch-offers-btn" class="font-mono text-xs text-blue-600 uppercase font-bold border border-blue-200 px-3 py-1 hover:bg-blue-50 admin-only hidden">Scannen</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center gap-2 mb-4">
+                        <a href="https://www.dekamarkt.nl/producten/zuivel-kaas/toetjes" target="_blank" class="font-mono text-xs uppercase font-bold border border-red-200 px-4 py-2 bg-red-50 text-red-700 hover:bg-red-100">DekaMarkt</a>
+                        <a href="https://www.aldi.nl/producten/zuivel-eieren-boter/toetjes-desserts.html" target="_blank" class="font-mono text-xs uppercase font-bold border border-blue-200 px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100">Aldi</a>
+                    </div>
+
+                    <div id="fetch-status" class="text-center font-mono text-base opacity-60 hidden mb-4">Scannen...</div>
+                    <div id="offers-list" class="space-y-3">
+                        <div class="text-center py-4 opacity-40 font-mono text-base italic">Geen Gegevens Gevonden...</div>
+                    </div>
+                </section>
+            </div>
         </main>
 
         <!-- Footer -->
-        <footer class="mt-24 pt-12 border-t border-[#5A5A40]/10 text-center fade-in" style="animation-delay: 0.6s">
-            <p class="italic opacity-40 text-sm">
-                "Eten bij opa is altijd een feestje."
+        <footer class="mt-12 pt-6 border-t border-slate-200 text-center fade-in">
+            <p class="font-mono text-xs uppercase font-bold opacity-30 tracking-widest">
+                "Technische Specificatie: Toetjes bij Opa Gerard v3.1"
             </p>
         </footer>
 
         <!-- Success Notification -->
-        <div id="success-toast" class="fixed bottom-8 left-1/2 bg-[#1a1a1a] text-white px-6 py-3 rounded-full shadow-2xl font-sans text-sm z-50">
-            Bedankt! Opa Gerard heeft je voorkeur ontvangen.
+        <div id="success-toast" class="fixed bottom-8 left-1/2 bg-slate-800 text-white px-6 py-4 font-mono text-sm uppercase font-bold z-50">
+            Gegevensoverdracht Geslaagd.
         </div>
     </div>
 
-    <script>
-        const DESSERTS = [
-            { id: 'vla', name: 'Vla met Slagroom', image: 'https://picsum.photos/seed/custard/400/600', description: 'De klassieke Nederlandse vla.' },
-            { id: 'ijs', name: 'Ijs met Vruchtjes', image: 'https://picsum.photos/seed/sorbet/400/600', description: 'Heerlijk verfrissend ijs.' },
-            { id: 'fruit', name: 'Vers Fruit', image: 'https://picsum.photos/seed/berries/400/600', description: 'Gezond en lekker van het seizoen.' },
-            { id: 'pudding', name: "Opa's zelfgemaakt toetje", image: 'https://picsum.photos/seed/homemade/400/600', description: "Opa's specialiteit." },
-        ];
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, getDocs, collection, onSnapshot, query, orderBy, serverTimestamp, addDoc, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+        import { GoogleGenAI, Type } from "https://esm.run/@google/genai";
 
-        let selectedId = localStorage.getItem('dessertPreference') || null;
-        const grid = document.getElementById('dessert-grid');
-        const form = document.getElementById('preference-form');
-        const textarea = document.getElementById('custom-suggestion');
-        const submitBtn = document.getElementById('submit-btn');
-        const toast = document.getElementById('success-toast');
-
-        function renderGrid() {
-            grid.innerHTML = DESSERTS.map((dessert, index) => `
-                <button
-                    onclick="selectDessert('${dessert.id}')"
-                    class="group relative flex flex-col items-center text-center focus:outline-none"
-                >
-                    <div class="relative mb-4 transition-transform duration-500 group-hover:scale-105 ${selectedId === dessert.id ? 'selected-ring rounded-full' : ''}">
-                        <img 
-                            src="${dessert.image}" 
-                            alt="${dessert.name}"
-                            class="pill-image w-full max-w-[150px]"
-                        />
-                        ${selectedId === dessert.id ? `
-                            <div class="absolute inset-0 bg-[#5A5A40]/20 rounded-full flex items-center justify-center">
-                                <div class="bg-[#5A5A40] text-white p-2 rounded-full shadow-lg">
-                                    <i data-lucide="check" size="20"></i>
-                                </div>
-                            </div>
-                        ` : ''}
-                    </div>
-                    <span class="text-lg font-medium">${dessert.name}</span>
-                    <span class="font-sans text-xs opacity-50 mt-1">${dessert.description}</span>
-                </button>
-            `).join('');
-            lucide.createIcons();
-            updateSubmitButton();
-        }
-
-        window.selectDessert = function(id) {
-            selectedId = id;
-            localStorage.setItem('dessertPreference', id);
-            renderGrid();
+        // Firebase Config
+        const firebaseConfig = {
+            projectId: "gen-lang-client-0866310951",
+            appId: "1:787458513736:web:26d6808a75cfe6960df17d",
+            apiKey: "AIzaSyAMe6Cx_9_2nbr9C7FR9ZlD1YvTn0ypr98",
+            authDomain: "gen-lang-client-0866310951.firebaseapp.com",
+            firestoreDatabaseId: "ai-studio-b962901a-40d4-4b69-9515-c3e33a041c7d"
         };
 
-        function updateSubmitButton() {
-            submitBtn.disabled = !selectedId && !textarea.value.trim();
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+
+        // Connection Test
+        async function testConnection() {
+            try {
+                const { getDocFromServer } = await import("https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js");
+                await getDocFromServer(doc(db, 'test', 'connection'));
+                console.log("Firestore connection successful");
+            } catch (error) {
+                if (error instanceof Error && error.message.includes('the client is offline')) {
+                    console.error("Firestore is offline. Check configuration.");
+                    const statusEl = document.getElementById('fetch-status');
+                    if (statusEl) {
+                        statusEl.classList.remove('hidden');
+                        statusEl.textContent = "Verbinding met database mislukt. Controleer je internet of configuratie.";
+                    }
+                }
+            }
+        }
+        testConnection();
+
+        const FAMILY_PASSWORD = "toetjes"; 
+        const ADMIN_PASSWORD = "gerard";
+
+        let isLoggedIn = false;
+        let isAdmin = false;
+        let currentCalendarDate = new Date();
+        let calendarEvents = [];
+        let allPreferences = [];
+
+        // Dutch Holidays 2026
+        const FIXED_HOLIDAYS = [
+            { date: '2026-01-01', title: 'Nieuwjaarsdag', type: 'holiday' },
+            { date: '2026-03-29', title: 'Zomertijd begint', type: 'holiday' },
+            { date: '2026-04-03', title: 'Goede Vrijdag', type: 'holiday' },
+            { date: '2026-04-05', title: '1e Paasdag', type: 'holiday' },
+            { date: '2026-04-06', title: '2e Paasdag', type: 'holiday' },
+            { date: '2026-04-27', title: 'Koningsdag', type: 'holiday' },
+            { date: '2026-05-04', title: 'Dodenherdenking', type: 'holiday' },
+            { date: '2026-05-05', title: 'Bevrijdingsdag', type: 'holiday' },
+            { date: '2026-05-14', title: 'Hemelvaartsdag', type: 'holiday' },
+            { date: '2026-05-24', title: '1e Pinksterdag', type: 'holiday' },
+            { date: '2026-05-25', title: '2e Pinksterdag', type: 'holiday' },
+            { date: '2026-10-25', title: 'Wintertijd begint', type: 'holiday' },
+            { date: '2026-12-05', title: 'Sinterklaas', type: 'holiday' },
+            { date: '2026-12-25', title: '1e Kerstdag', type: 'holiday' },
+            { date: '2026-12-26', title: '2e Kerstdag', type: 'holiday' },
+            { date: '2026-12-31', title: 'Oudjaarsdag', type: 'holiday' },
+        ];
+
+        // Operation Types for Error Handling
+        const OperationType = {
+            CREATE: 'create',
+            UPDATE: 'update',
+            DELETE: 'delete',
+            LIST: 'list',
+            GET: 'get',
+            WRITE: 'write',
+        };
+
+        function handleFirestoreError(error, operationType, path) {
+            const errInfo = {
+                error: error instanceof Error ? error.message : String(error),
+                operationType,
+                path
+            };
+            console.error('Firestore Error: ', JSON.stringify(errInfo));
+            // Show a user-friendly message if it's a permission error
+            if (errInfo.error.includes('insufficient permissions')) {
+                const statusEl = document.getElementById('fetch-status');
+                if (statusEl) {
+                    statusEl.classList.remove('hidden');
+                    statusEl.textContent = "TOEGANG_GEWEIGERD: ONVOLDOENDE_RECHTEN_VOOR_ACTIE";
+                    setTimeout(() => statusEl.classList.add('hidden'), 5000);
+                }
+            }
         }
 
-        textarea.addEventListener('input', updateSubmitButton);
+        // DOM Elements
+        const loginOverlay = document.getElementById('login-overlay');
+        const passwordInput = document.getElementById('family-password');
+        const enterBtn = document.getElementById('enter-btn');
+        const loginError = document.getElementById('login-error');
+        const mainContent = document.getElementById('main-content');
+        const nameInput = document.getElementById('user-name');
+        const form = document.getElementById('preference-form');
+        const textarea = document.getElementById('custom-suggestion');
+        const mediaUrlInput = document.getElementById('media-url');
+        const mediaTypeInput = document.getElementById('media-type');
+        const submitBtn = document.getElementById('submit-btn');
+        const toast = document.getElementById('success-toast');
+        const logoutBtn = document.getElementById('logout-btn');
+        
+        const calendarDays = document.getElementById('calendar-days');
+        const monthYearDisplay = document.getElementById('current-month-year');
+        const prevMonthBtn = document.getElementById('prev-month');
+        const nextMonthBtn = document.getElementById('next-month');
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Show success state
-            const originalContent = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i data-lucide="check" size="18"></i><span>Verzonden!</span>';
+        const offersSection = document.getElementById('offers-section');
+        const offersList = document.getElementById('offers-list');
+
+        const preferenceDateInput = document.getElementById('preference-date');
+        const adminResults = document.getElementById('admin-results');
+        const fetchOffersBtn = document.getElementById('fetch-offers-btn');
+        const fetchStatus = document.getElementById('fetch-status');
+        const clearPreferencesBtn = document.getElementById('clear-preferences-btn');
+        const clearOffersBtn = document.getElementById('clear-offers-btn');
+
+        const confirmModal = document.getElementById('confirm-modal');
+        const confirmTitle = document.getElementById('confirm-title');
+        const confirmMessage = document.getElementById('confirm-message');
+        const confirmOk = document.getElementById('confirm-ok');
+        const confirmCancel = document.getElementById('confirm-cancel');
+
+        let confirmCallback = null;
+
+        function showConfirm(title, message, callback) {
+            confirmTitle.textContent = title;
+            confirmMessage.textContent = message;
+            confirmCallback = callback;
+            confirmModal.classList.remove('hidden');
             lucide.createIcons();
-            
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-                submitBtn.innerHTML = originalContent;
-                lucide.createIcons();
-            }, 3000);
+        }
+
+        confirmCancel.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+            confirmCallback = null;
         });
 
-        // Initial render
-        renderGrid();
+        confirmOk.addEventListener('click', async () => {
+            if (confirmCallback) {
+                await confirmCallback();
+            }
+            confirmModal.classList.add('hidden');
+            confirmCallback = null;
+        });
+
+        const nameBtns = document.querySelectorAll('.name-btn');
+        const comingYes = document.getElementById('coming-yes');
+        const comingNo = document.getElementById('coming-no');
+        const comingMaybe = document.getElementById('coming-maybe');
+        const isComingInput = document.getElementById('is-coming');
+
+        let selectedName = "";
+
+        // Set default date to next Wednesday
+        function setNextWednesday() {
+            const today = new Date();
+            const day = today.getDay();
+            const diff = (day <= 3) ? (3 - day) : (10 - day);
+            const nextWed = new Date(today.getTime() + diff * 24 * 60 * 60 * 1000);
+            preferenceDateInput.value = nextWed.toISOString().split('T')[0];
+        }
+        
+        // Restore selections
+        const savedName = localStorage.getItem('opa_selected_name');
+        if (savedName) {
+            const btn = Array.from(nameBtns).find(b => b.dataset.name === savedName);
+            if (btn) btn.click();
+        }
+
+        const savedDate = localStorage.getItem('opa_selected_date');
+        if (savedDate) {
+            preferenceDateInput.value = savedDate;
+        } else {
+            setNextWednesday();
+        }
+
+        // Name Selection Logic
+        nameBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                nameBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedName = btn.dataset.name;
+                nameInput.value = selectedName;
+                
+                // Persist selection
+                localStorage.setItem('opa_selected_name', selectedName);
+                
+                // Clear fields for the new person
+                textarea.value = "";
+                mediaUrlInput.value = "";
+                mediaTypeInput.value = "link";
+                
+                updateSubmitButton();
+                renderAdminResults(allPreferences); // Re-render to show edit/delete buttons for this user
+            });
+        });
+
+        preferenceDateInput.addEventListener('change', () => {
+            localStorage.setItem('opa_selected_date', preferenceDateInput.value);
+            renderAdminResults(allPreferences); // Re-render list for new date
+            renderCalendar(); // Update selection visual
+        });
+
+        comingYes.addEventListener('click', () => {
+            comingYes.classList.add('active', 'yes');
+            comingNo.classList.remove('active', 'no');
+            comingMaybe.classList.remove('active', 'maybe');
+            isComingInput.value = "true";
+        });
+
+        comingNo.addEventListener('click', () => {
+            comingNo.classList.add('active', 'no');
+            comingYes.classList.remove('active', 'yes');
+            comingMaybe.classList.remove('active', 'maybe');
+            isComingInput.value = "false";
+        });
+
+        comingMaybe.addEventListener('click', () => {
+            comingMaybe.classList.add('active', 'maybe');
+            comingYes.classList.remove('active', 'yes');
+            comingNo.classList.remove('active', 'no');
+            isComingInput.value = "maybe";
+        });
+        
+        // Default to "Ja"
+        comingYes.click();
+
+        // Login Logic
+        enterBtn.addEventListener('click', () => {
+            const pass = passwordInput.value.toLowerCase().trim();
+            
+            if (pass === FAMILY_PASSWORD || pass === ADMIN_PASSWORD) {
+                isLoggedIn = true;
+                isAdmin = (pass === ADMIN_PASSWORD);
+                
+                loginOverlay.classList.add('hidden');
+                mainContent.classList.remove('opacity-0', 'pointer-events-none');
+                
+                setupCalendarListener();
+                setupOffersListener();
+                setupPreferencesListener();
+                
+                // Show admin controls if logged in as admin
+                if (isAdmin) {
+                    document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
+                }
+
+                localStorage.setItem('opa_auth', pass);
+            } else {
+                loginError.classList.remove('hidden');
+            }
+        });
+
+        const savedAuth = localStorage.getItem('opa_auth');
+        if (savedAuth) {
+            passwordInput.value = savedAuth;
+            enterBtn.click();
+        }
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('opa_auth');
+            window.location.reload();
+        });
+
+        // Calendar Logic
+        function setupCalendarListener() {
+            onSnapshot(collection(db, "calendar_events"), (snapshot) => {
+                calendarEvents = [];
+                snapshot.forEach((doc) => {
+                    calendarEvents.push({ id: doc.id, ...doc.data() });
+                });
+                renderCalendar();
+            }, (error) => {
+                handleFirestoreError(error, OperationType.GET, "calendar_events");
+            });
+        }
+
+        function renderCalendar() {
+            const monthNames = ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
+            
+            // We'll render from the current month to 12 months in the future
+            const today = new Date();
+            const startYear = today.getFullYear();
+            const startMonth = today.getMonth();
+            
+            let html = '';
+            
+            for (let m = 0; m < 12; m++) {
+                const currentMonthDate = new Date(startYear, startMonth + m, 1);
+                const year = currentMonthDate.getFullYear();
+                const month = currentMonthDate.getMonth();
+                
+                // Month Header
+                html += `<div class="month-header">${monthNames[month]} ${year}</div>`;
+                
+                const firstDay = new Date(year, month, 1).getDay();
+                const daysInMonth = new Date(year, month + 1, 0).getDate();
+                
+                // Adjust first day (Monday = 0)
+                let startDay = firstDay === 0 ? 6 : firstDay - 1;
+                
+                // Empty slots for start of month
+                for (let i = 0; i < startDay; i++) {
+                    html += `<div class="calendar-day other-month"></div>`;
+                }
+                
+                // Current month days
+                for (let i = 1; i <= daysInMonth; i++) {
+                    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === i;
+                    
+                    // Check for events
+                    const dayEvents = [
+                        ...FIXED_HOLIDAYS.filter(e => e.date === dateStr),
+                        ...calendarEvents.filter(e => e.date === dateStr)
+                    ];
+                    
+                    // Default: Wednesday dinner
+                    const dayOfWeek = new Date(year, month, i).getDay();
+                    if (dayOfWeek === 3 && !dayEvents.some(e => e.type === 'dinner')) {
+                        dayEvents.push({ title: 'Eten bij Opa', type: 'dinner' });
+                    }
+
+                    const dayPreferences = allPreferences.filter(p => p.date === dateStr && (p.isComing === true || p.isComing === "true" || p.isComing === "maybe"));
+                    if (dayPreferences.length > 0) {
+                        const comingCount = dayPreferences.filter(p => p.isComing === true || p.isComing === "true").length;
+                        const maybeCount = dayPreferences.filter(p => p.isComing === "maybe").length;
+                        
+                        let title = "";
+                        if (comingCount > 0 && maybeCount > 0) {
+                            title = `${comingCount} komt, ${maybeCount} misschien`;
+                        } else if (comingCount > 0) {
+                            title = `${comingCount} ${comingCount === 1 ? 'persoon komt' : 'personen komen'}`;
+                        } else {
+                            title = `${maybeCount} ${maybeCount === 1 ? 'persoon misschien' : 'personen misschien'}`;
+                        }
+
+                        dayEvents.push({ 
+                            title: title, 
+                            type: 'attendance',
+                            names: dayPreferences.map(p => p.userName).join(', ')
+                        });
+                    }
+
+                    const isSelected = preferenceDateInput.value === dateStr;
+
+                    html += `
+                        <div class="calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" 
+                             onclick="window.selectCalendarDate('${dateStr}')">
+                            <span class="z-10">${i}</span>
+                            <div class="flex flex-col gap-0.5 mt-1 w-full overflow-hidden">
+                                ${dayEvents.map(e => `
+                                    <div class="event-text event-text-${e.type}" title="${e.title}">
+                                        ${e.title}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${dayEvents.length > 0 ? `
+                                <div class="absolute inset-0 flex flex-col items-center justify-center opacity-0 hover:opacity-100 bg-white/95 transition-opacity p-1 text-center pointer-events-none z-20">
+                                    ${dayEvents.map(e => `
+                                        <div class="font-mono font-bold text-slate-800 text-[10px] mb-0.5 leading-tight uppercase">${e.title}</div>
+                                        ${e.names ? `<div class="font-mono text-[8px] opacity-60 mb-0.5 uppercase">${e.names}</div>` : ''}
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
+            
+            calendarDays.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        window.selectCalendarDate = (dateStr) => {
+            preferenceDateInput.value = dateStr;
+            localStorage.setItem('opa_selected_date', dateStr);
+            renderCalendar(); // Update selection visual
+            
+            // Visual feedback on date input
+            preferenceDateInput.classList.add('ring-2', 'ring-blue-500/30');
+            setTimeout(() => preferenceDateInput.classList.remove('ring-2', 'ring-blue-500/30'), 1000);
+            
+            // Re-render admin results for the new date
+            renderAdminResults(allPreferences);
+
+            // Scroll to attendance log
+            const logSection = document.getElementById('attendance-log-section');
+            if (logSection) {
+                logSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        };
+
+        // Admin Calendar Controls
+        document.getElementById('add-event-btn').addEventListener('click', async () => {
+            const date = document.getElementById('event-date').value;
+            const title = document.getElementById('event-title').value.trim();
+            const type = document.getElementById('event-type').value;
+            if (!date || !title) return;
+            try {
+                await addDoc(collection(db, "calendar_events"), { date, title, type });
+                document.getElementById('event-title').value = '';
+            } catch (error) { console.error(error); }
+        });
+
+        window.deleteEvent = async (id) => {
+            showConfirm("Event verwijderen?", "Weet je zeker dat je dit event uit de kalender wilt halen?", async () => {
+                try { await deleteDoc(doc(db, "calendar_events", id)); } catch (error) { console.error(error); }
+            });
+        };
+
+        // Preferences Logic
+        function setupPreferencesListener() {
+            const q = query(collection(db, "preferences"), orderBy("timestamp", "desc"));
+            adminResults.innerHTML = `
+                <div class="text-center py-12 opacity-50 flex flex-col items-center gap-4">
+                    <div class="w-6 h-6 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+                    <p class="font-mono text-[10px] uppercase italic">Voorkeuren_Ophalen...</p>
+                </div>
+            `;
+            onSnapshot(q, (snapshot) => {
+                allPreferences = [];
+                snapshot.forEach((doc) => {
+                    allPreferences.push({ id: doc.id, ...doc.data() });
+                });
+                renderAdminResults(allPreferences);
+                renderCalendar(); // Update calendar with preference dots
+            }, (error) => {
+                handleFirestoreError(error, OperationType.GET, "preferences");
+                adminResults.innerHTML = `<div class="text-center py-12 text-red-600 font-mono text-base uppercase italic">Sync_Fout: Laden_van_Voorkeuren_Mislukt</div>`;
+            });
+        }
+
+        function renderAdminResults(results) {
+            const selectedDate = preferenceDateInput.value;
+            const filtered = results.filter(res => res.date === selectedDate);
+
+            const dateObj = new Date(selectedDate);
+            const formattedDate = isNaN(dateObj.getTime()) ? selectedDate : dateObj.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+            const dayName = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('nl-NL', { weekday: 'long' });
+            const dateNum = isNaN(dateObj.getTime()) ? '' : dateObj.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long' });
+
+            if (filtered.length === 0) {
+                adminResults.innerHTML = `
+                    <div class="space-y-6">
+                        <div class="bg-slate-100 p-6 border-l-8 border-slate-800">
+                            <div class="font-mono text-sm opacity-50 uppercase mb-1">Geselecteerde Datum:</div>
+                            <h4 class="font-mono text-3xl font-black uppercase text-slate-800 leading-none">
+                                <span class="text-blue-600">${dayName}</span><br/>
+                                ${dateNum}
+                            </h4>
+                        </div>
+                        <div class="text-center py-12 opacity-40 font-mono text-base italic uppercase border-2 border-dashed border-slate-200">Geen invoer voor deze datum...</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const comingCount = filtered.filter(res => res.isComing === true || res.isComing === "true").length;
+            const maybeCount = filtered.filter(res => res.isComing === "maybe").length;
+            const notComingCount = filtered.filter(res => res.isComing === false || res.isComing === "false").length;
+
+            adminResults.innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-slate-800 p-6 text-white border-b-4 border-blue-500">
+                        <div class="font-mono text-xs opacity-50 uppercase mb-2">Aanwezigheidslogboek voor:</div>
+                        <h4 class="font-mono text-3xl font-black uppercase leading-none mb-4">
+                            <span class="text-blue-400">${dayName}</span><br/>
+                            ${dateNum}
+                        </h4>
+                        <div class="flex gap-3 font-mono text-xs font-bold">
+                            <div class="px-2 py-1 bg-green-500 text-white uppercase">
+                                ${comingCount} BEVESTIGD
+                            </div>
+                            <div class="px-2 py-1 bg-orange-500 text-white uppercase">
+                                ${maybeCount} MISSCHIEN
+                            </div>
+                            <div class="px-2 py-1 bg-red-500 text-white uppercase">
+                                ${notComingCount} AFGEWEZEN
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid gap-2">
+                        ${filtered.map(res => {
+                            let mediaHtml = '';
+                            if (res.mediaUrl) {
+                                if (res.mediaType === 'image') mediaHtml = `<img src="${res.mediaUrl}" class="media-preview" />`;
+                                else if (res.mediaType === 'video') mediaHtml = `<div class="mt-2 font-mono text-xs text-blue-600 underline uppercase"><a href="${res.mediaUrl}" target="_blank">BEKIJK_ITEM</a></div>`;
+                                else if (res.mediaType === 'audio') mediaHtml = `<audio controls class="mt-2 w-full h-8"><source src="${res.mediaUrl}"></audio>`;
+                                else mediaHtml = `<div class="mt-2 font-mono text-xs text-blue-600 underline uppercase"><a href="${res.mediaUrl}" target="_blank">REF_LINK</a></div>`;
+                            }
+                            let statusColor = 'text-orange-500';
+                            let statusText = 'MISSCHIEN';
+                            
+                            if (res.isComing === true || res.isComing === "true") {
+                                statusColor = 'text-green-600';
+                                statusText = 'BEVESTIGD';
+                            } else if (res.isComing === false || res.isComing === "false") {
+                                statusColor = 'text-red-600';
+                                statusText = 'AFGEWEZEN';
+                            }
+                            
+                            const isOwnEntry = selectedName === res.userName;
+
+                            return `
+                                <div class="card p-3 flex flex-col gap-2 relative group border-slate-200 shadow-none hover:bg-slate-50 transition-colors">
+                                    <div class="absolute top-2 right-2 flex gap-1">
+                                        ${(isAdmin || isOwnEntry) ? `
+                                            <button onclick="window.editPreference('${res.id}')" class="p-2 hover:bg-blue-50 text-blue-600 border border-blue-100 opacity-0 group-hover:opacity-100 transition-opacity" title="Bewerken">
+                                                <i data-lucide="edit-3" size="14"></i>
+                                            </button>
+                                            <button onclick="window.deletePreference('${res.id}')" class="p-2 hover:bg-red-50 text-red-600 border border-red-100 opacity-0 group-hover:opacity-100 transition-opacity" title="Verwijderen">
+                                                <i data-lucide="trash-2" size="14"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-8 h-8 bg-slate-100 flex items-center justify-center font-mono font-bold text-xs uppercase">
+                                                ${res.userName ? res.userName.charAt(0) : '?'}
+                                            </div>
+                                            <div>
+                                                <h4 class="font-mono text-base font-bold uppercase tracking-tight">${res.userName || 'ONBEKEND'}</h4>
+                                                <span class="font-mono text-xs font-bold ${statusColor} uppercase">${statusText}</span>
+                                            </div>
+                                        </div>
+                                        <span class="font-mono text-xs opacity-30 uppercase">
+                                            ${res.timestamp ? new Date(res.timestamp.toDate()).toLocaleTimeString('nl-NL', {hour: '2-digit', minute:'2-digit'}) : ''}
+                                        </span>
+                                    </div>
+                                    ${res.customSuggestion ? `<p class="font-mono text-sm opacity-80 border-l-2 border-slate-200 pl-3 py-2 bg-slate-50 uppercase">"${res.customSuggestion}"</p>` : ''}
+                                    ${mediaHtml}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        window.deletePreference = async (id) => {
+            showConfirm("Voorkeur verwijderen?", "Weet je zeker dat je deze melding wilt verwijderen?", async () => {
+                try {
+                    await deleteDoc(doc(db, "preferences", id));
+                } catch (error) {
+                    console.error("Error deleting preference:", error);
+                }
+            });
+        };
+
+        window.editPreference = (id) => {
+            const pref = allPreferences.find(p => p.id === id);
+            if (!pref) return;
+
+            // Set the UI to match the preference
+            preferenceDateInput.value = pref.date;
+            
+            // Trigger name selection
+            const nameBtn = Array.from(nameBtns).find(b => b.dataset.name === pref.userName);
+            if (nameBtn) nameBtn.click();
+
+            // Set attendance
+            if (pref.isComing === true || pref.isComing === "true") comingYes.click();
+            else if (pref.isComing === false || pref.isComing === "false") comingNo.click();
+            else comingMaybe.click();
+
+            // Set text and media
+            textarea.value = pref.customSuggestion || "";
+            mediaUrlInput.value = pref.mediaUrl || "";
+            mediaTypeInput.value = pref.mediaType || "link";
+
+            // Scroll to top to let user see the fields
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Visual feedback
+            textarea.classList.add('ring-4', 'ring-blue-500/50');
+            setTimeout(() => textarea.classList.remove('ring-4', 'ring-blue-500/50'), 1500);
+        };
+
+        clearPreferencesBtn.addEventListener('click', async () => {
+            showConfirm("Alles verwijderen?", "Weet je zeker dat je ALLE voorkeuren wilt verwijderen?", async () => {
+                try {
+                    const snapshot = await getDocs(collection(db, "preferences"));
+                    const batch = writeBatch(db);
+                    snapshot.forEach((d) => {
+                        batch.delete(d.ref);
+                    });
+                    await batch.commit();
+                } catch (error) {
+                    console.error("Error clearing preferences:", error);
+                }
+            });
+        });
+
+        // Offers Logic
+        function setupOffersListener() {
+            offersList.innerHTML = `
+                <div class="text-center py-8 opacity-40 flex flex-col items-center gap-4 col-span-full">
+                    <div class="w-6 h-6 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+                    <p class="font-mono text-[10px] uppercase italic">Retail_Gegevens_Synchroniseren...</p>
+                </div>
+            `;
+            onSnapshot(collection(db, "offers"), (snapshot) => {
+                const offers = [];
+                snapshot.forEach((doc) => {
+                    offers.push({ id: doc.id, ...doc.data() });
+                });
+                renderOffers(offers);
+            }, (error) => {
+                handleFirestoreError(error, OperationType.GET, "offers");
+                offersList.innerHTML = `<div class="text-center py-8 text-red-600 font-mono text-[10px] uppercase italic col-span-full">Sync_Fout: Laden_van_Gegevens_Mislukt</div>`;
+            });
+        }
+
+        function renderOffers(offers) {
+            // Filter to only show Aldi and DekaMarkt
+            const filteredOffers = offers.filter(offer => {
+                const sm = offer.supermarket ? offer.supermarket.toLowerCase() : "";
+                return sm.includes('aldi') || sm.includes('dekamarkt') || sm.includes('deka markt');
+            });
+
+            if (filteredOffers.length === 0) {
+                offersList.innerHTML = `
+                    <div class="text-center py-8 opacity-40 font-mono text-[10px] italic uppercase col-span-full">
+                        Geen actieve aanbiedingen gevonden...
+                    </div>
+                `;
+            } else {
+                offersList.innerHTML = filteredOffers.map(offer => `
+                    <div class="card p-3 border-slate-200 shadow-none hover:bg-slate-50 transition-colors flex flex-col relative group">
+                        ${isAdmin ? `
+                        <button onclick="window.deleteOffer('${offer.id}')" class="absolute top-2 right-2 p-2 hover:bg-red-50 text-red-600 border border-red-100 opacity-0 group-hover:opacity-100 transition-opacity" title="Verwijderen">
+                            <i data-lucide="trash-2" size="14"></i>
+                        </button>
+                        ` : ''}
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-mono text-xs font-bold px-1.5 py-0.5 bg-slate-100 uppercase border border-slate-200">${offer.supermarket || 'WINKEL'}</span>
+                            <span class="font-mono text-base font-bold text-blue-600 uppercase">${offer.price || '€ --'}</span>
+                        </div>
+                        <h4 class="font-mono text-base font-bold uppercase mb-1 leading-tight">${offer.title}</h4>
+                        ${offer.validUntil ? `<p class="font-mono text-xs opacity-40 uppercase mb-2">GELDIG_TOT: ${offer.validUntil}</p>` : ''}
+                        
+                        <div class="mt-auto pt-2 border-t border-slate-100 flex flex-col gap-1">
+                            <button onclick="window.selectDessert('${offer.title.replace(/'/g, "\\'")}', '${offer.supermarket}')" class="w-full py-2 bg-blue-600 text-white font-mono font-bold hover:bg-blue-700 transition-all text-xs uppercase">
+                                SELECTEER_AANBIEDING
+                            </button>
+                            ${offer.link ? `<a href="${offer.link}" target="_blank" class="font-mono text-xs text-blue-600 hover:underline text-center uppercase">EXTERNE_LINK</a>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            lucide.createIcons();
+        }
+
+        window.selectDessert = (title, supermarket) => {
+            if (!selectedName) {
+                showConfirm("NAAM_ONTBREEKT", "SELECTEER_EERST_JE_NAAM", () => {});
+                return;
+            }
+            textarea.value = `IK_ZOU_GRAAG_DE_${title.toUpperCase().replace(/\s+/g, '_')}_VAN_DE_${supermarket.toUpperCase().replace(/\s+/g, '_')}_WILLEN_ETEN!`;
+            updateSubmitButton();
+            textarea.scrollIntoView({ behavior: 'smooth' });
+            // Highlight the textarea briefly
+            textarea.classList.add('ring-2', 'ring-blue-500/30');
+            setTimeout(() => textarea.classList.remove('ring-2', 'ring-blue-500/30'), 1000);
+        };
+
+        window.deleteOffer = async (id) => {
+            showConfirm("Aanbieding verwijderen?", "Weet je zeker dat je deze aanbieding wilt verwijderen?", async () => {
+                try {
+                    await deleteDoc(doc(db, "offers", id));
+                } catch (error) {
+                    console.error("Error deleting offer:", error);
+                }
+            });
+        };
+
+        clearOffersBtn.addEventListener('click', async () => {
+            showConfirm("Lijst leegmaken?", "Weet je zeker dat je ALLE aanbiedingen wilt verwijderen?", async () => {
+                try {
+                    const snapshot = await getDocs(collection(db, "offers"));
+                    const batch = writeBatch(db);
+                    snapshot.forEach((d) => {
+                        batch.delete(d.ref);
+                    });
+                    await batch.commit();
+                } catch (error) {
+                    console.error("Error clearing offers:", error);
+                }
+            });
+        });
+
+        fetchOffersBtn.addEventListener('click', async () => {
+            fetchStatus.classList.remove('hidden');
+            fetchStatus.textContent = "RETAIL_DATABASES_SCANNEN_OP_TOETJES...";
+            fetchOffersBtn.disabled = true;
+            try {
+                const ai = new GoogleGenAI({ apiKey: firebaseConfig.apiKey });
+                const response = await ai.models.generateContent({
+                    model: "gemini-3-flash-preview",
+                    contents: "Zoek actuele toetjes aanbiedingen (vla, pudding, ijs, yoghurt) bij DekaMarkt (https://www.dekamarkt.nl/producten/zuivel-kaas/toetjes) en Aldi (https://www.aldi.nl/producten/zuivel-eieren-boter/toetjes-desserts.html) voor deze week. Geef een lijst van maximaal 8 aanbiedingen.",
+                    config: {
+                        tools: [
+                            { googleSearch: {} },
+                            { urlContext: {} }
+                        ],
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: Type.ARRAY,
+                            items: {
+                                type: Type.OBJECT,
+                                properties: {
+                                    title: { type: Type.STRING },
+                                    supermarket: { type: Type.STRING },
+                                    price: { type: Type.STRING },
+                                    validUntil: { type: Type.STRING },
+                                    link: { type: Type.STRING }
+                                },
+                                required: ["title", "supermarket"]
+                            }
+                        }
+                    }
+                });
+
+                let jsonText = response.text.trim();
+                if (jsonText.startsWith('```json')) {
+                    jsonText = jsonText.replace(/^```json\n/, '').replace(/\n```$/, '');
+                } else if (jsonText.startsWith('```')) {
+                    jsonText = jsonText.replace(/^```\n/, '').replace(/\n```$/, '');
+                }
+
+                const offers = JSON.parse(jsonText);
+                const batch = writeBatch(db);
+                
+                for (const offer of offers) {
+                    const offerId = offer.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                    batch.set(doc(db, "offers", offerId), offer);
+                }
+                await batch.commit();
+                fetchStatus.textContent = "DATABASE_SYNC_VOLTOOID";
+            } catch (error) {
+                console.error(error);
+                fetchStatus.textContent = "SCAN_MISLUKT: " + (error.message || "ONBEKENDE_FOUT");
+            } finally {
+                setTimeout(() => {
+                    fetchStatus.classList.add('hidden');
+                    fetchOffersBtn.disabled = false;
+                }, 5000);
+            }
+        });
+
+        function updateSubmitButton() {
+            const name = nameInput.value.trim();
+            submitBtn.disabled = !name;
+            lucide.createIcons();
+        }
+
+        nameInput.addEventListener('input', updateSubmitButton);
+        textarea.addEventListener('input', updateSubmitButton);
+        mediaUrlInput.addEventListener('input', updateSubmitButton);
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = nameInput.value.trim();
+            const date = preferenceDateInput.value;
+            if (!name || !date) return;
+
+            submitBtn.disabled = true;
+            const originalContent = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin mr-2"></div><span>VERZENDEN...</span>';
+
+            try {
+                const docId = `${name.toLowerCase().replace(/\s+/g, '-')}_${date}`;
+                await setDoc(doc(db, "preferences", docId), {
+                    userId: docId,
+                    userName: name,
+                    date: date,
+                    isComing: isComingInput.value === "true" ? true : (isComingInput.value === "false" ? false : "maybe"),
+                    customSuggestion: textarea.value.trim(),
+                    mediaUrl: mediaUrlInput.value.trim(),
+                    mediaType: mediaTypeInput.value,
+                    timestamp: serverTimestamp()
+                });
+
+                submitBtn.innerHTML = '<i data-lucide="check" size="14"></i><span>GESLAAGD</span>';
+                lucide.createIcons();
+                
+                toast.classList.add('show');
+                
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    submitBtn.innerHTML = originalContent;
+                    submitBtn.disabled = false;
+                    lucide.createIcons();
+                }, 3000);
+            } catch (error) {
+                handleFirestoreError(error, OperationType.WRITE, "preferences");
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+                lucide.createIcons();
+                showConfirm("VERZEND_FOUT", "GEGEVENS_OPSLAAN_MISLUKT_CONTROLEER_VERBINDING", () => {});
+            }
+        });
+
         lucide.createIcons();
     </script>
 </body>

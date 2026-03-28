@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "preferences": {
+      "title": "Preferences",
+      "description": "User preferences for Opa Gerard's Wednesday dinner.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The name-date based ID of the user preference." },
+        "userName": { "type": "string", "description": "The name of the user." },
+        "date": { "type": "string", "format": "date", "description": "The date for which this preference applies." },
+        "isComing": { "type": "boolean", "description": "Whether the user is coming to eat." },
+        "customSuggestion": { "type": "string", "description": "The main message or suggestion." },
+        "mediaUrl": { "type": "string", "description": "URL to an image, video, or sound." },
+        "mediaType": { "type": "string", "enum": ["image", "video", "audio", "link"], "description": "Type of media shared." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the preference was submitted." }
+      },
+      "required": ["userId", "userName", "timestamp"]
+    },
+    "calendar_events": {
+      "title": "Calendar Events",
+      "description": "Events on Opa's calendar (dinners, holidays, vacations).",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string", "format": "date", "description": "Date of the event (YYYY-MM-DD)." },
+        "title": { "type": "string", "description": "Title of the event." },
+        "type": { "type": "string", "enum": ["dinner", "holiday", "vacation"], "description": "Type of event." },
+        "description": { "type": "string", "description": "Optional details." }
+      },
+      "required": ["date", "title", "type"]
+    },
+    "offers": {
+      "title": "Dessert Offers",
+      "description": "Current dessert offers from Dutch supermarkets.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "supermarket": { "type": "string" },
+        "price": { "type": "string" },
+        "validUntil": { "type": "string" },
+        "link": { "type": "string" }
+      },
+      "required": ["title", "supermarket"]
+    }
+  },
+  "firestore": {
+    "/preferences/{preferenceId}": {
+      "schema": "preferences",
+      "description": "Collection of preferences."
+    },
+    "/calendar_events/{eventId}": {
+      "schema": "calendar_events",
+      "description": "Collection of calendar events."
+    },
+    "/offers/{offerId}": {
+      "schema": "offers",
+      "description": "Collection of dessert offers."
+    }
+  }
+}
