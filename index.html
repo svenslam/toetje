@@ -724,6 +724,7 @@
         let currentCalendarDate = new Date();
         let calendarEvents = [];
         let allPreferences = [];
+        let hasInitialScrolled = false;
 
         // Dutch Holidays 2026
         const FIXED_HOLIDAYS = [
@@ -1058,6 +1059,18 @@
             
             calendarDays.innerHTML = html;
             lucide.createIcons();
+
+            // Scroll to today on initial load
+            if (!hasInitialScrolled && isLoggedIn) {
+                const todayEl = calendarDays.querySelector('.today');
+                if (todayEl) {
+                    // Small delay to ensure rendering is complete and mainContent is visible
+                    setTimeout(() => {
+                        todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        hasInitialScrolled = true;
+                    }, 100);
+                }
+            }
         }
 
         window.selectCalendarDate = (dateStr) => {
